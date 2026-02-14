@@ -1,0 +1,46 @@
+# Removi a tag 'version' pois ela é obsoleta nas versões novas do Docker
+services:
+  db-postgres:
+    image: postgres:alpine
+    container_name: postgres_dev
+    profiles: ["pg"] # Só sobe com: docker compose --profile pg up -d
+    environment:
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    deploy:
+      resources:
+        limits:
+          memory: 128M # Limite máximo que ele pode chegar
+        reservations:
+          memory: 64M  # O que ele reserva de cara
+
+  db-mysql:
+    image: mysql:8.0
+    container_name: mysql_dev
+    profiles: ["my"] # Só sobe com: docker compose --profile my up -d
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=mysql_native_password --performance-schema=OFF # Jargão: Desativar Performance Schema economiza muita RAM
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+  db-mongodb:
+    image: mongo:latest
+    container_name: mongo_dev
+    profiles: ["mo"] # Só sobe com: docker compose --profile mo up -d
+    ports:
+      - "27017:27017"
+    command: --wiredTigerCacheSizeGB 0.25 # Limita o cache do motor WiredTiger para 256MB
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+        reservations:
+          memory: 128M
