@@ -1,29 +1,49 @@
 @echo off
+cls
 echo ==========================================
 echo    ENCERRANDO E LIMPANDO TUDO (FULL WIPE)
 echo ==========================================
-cd /d "C:\Users\Usuario\Documents\Projetos\Infra"
 
-:: 1. Derruba os containers e tenta limpar o básico
-docker compose --profile pg --profile my --profile mo down -v --rmi local --remove-orphans
+:: Jargão: 'Context Awareness' - Garante que o script rode na pasta certa
+cd /d "%~dp0"
 
-:: 2. Jargão: 'image prune -a' remove imagens que não estão em uso (limpa o MySQL residual)
-echo Removendo imagens pesadas e residuais...
+echo [AVISO] Esta acao ira destruir:
+echo - Todos os Containers da stack
+echo - Todos os Volumes (DADOS PERDIDOS)
+echo - Imagens locais e residuos de rede
+echo.
+set /p confirm="Tem certeza que deseja prosseguir? (S/N): "
+if /i "%confirm%" neq "S" (
+    echo [INFO] Operacao cancelada pelo usuario.
+    pause
+    exit /b 0
+)
+
+echo.
+echo [1/3] Derrubando stack e removendo volumes...
+:: Jargão: 'Orphan Removal' - Limpa containers que sobraram de versões antigas do compose
+docker compose --profile pg --profile my --profile mo --profile redis down -v --rmi local --remove-orphans
+
+echo [2/3] Executando Deep Clean de imagens...
+:: Remove imagens que não estão em uso para liberar espaço real no SSD
 docker image prune -a -f
 
-:: 3. Jargão: 'volume prune' remove volumes órfãos/anônimos (aqueles códigos gigantes)
-echo Removendo volumes anonimos...
+echo [3/3] Removendo volumes anonimos residuais...
 docker volume prune -f
 
+:: Limpeza opcional de logs para manter a casa organizada
+if exist "logs" (
+    echo Limpando logs de execucao...
+    del /q "logs\*.log" >nul 2>&1
+)
+
 echo.
-echo [OK] Containers, Volumes e Imagens foram eliminados.
+echo ==========================================
+echo [OK] O ambiente foi sanitizado (Tabula Rasa).
+echo ==========================================
 echo.
-echo Status atual (deve estar tudo vazio):
+echo Status atual:
 echo --- Containers ---
 docker ps -a
-echo --- Volumes ---
-docker volume ls
-echo --- Imagens ---
-docker images
 echo.
 pause

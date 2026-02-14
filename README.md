@@ -1,71 +1,359 @@
-# Iniciar bancos via Docker (uso com DataGrip / DBeaver)
+# 🐳 Infra Dev - Docker Database Stack
 
-Este repositório contém scripts e um docker-compose.yml para facilitar a inicialização de bancos em containers Docker — assim você não precisa instalar cada SGBD e driver localmente.
+> Stack completa de bancos de dados para desenvolvimento local usando Docker - PostgreSQL, MySQL e MongoDB prontos para uso com DataGrip/DBeaver.
 
-Principais pontos
-- Uso de senhas padrão `admin`: as credenciais estão definidas como `admin` por convenção de ambiente de desenvolvimento (mais simples e comum em dev). Altere antes de usar em ambientes compartilhados ou production.
-- Repositório público: este projeto está pensado para ser compartilhado (público). Não coloque dados sensíveis ou backups não criptografados aqui.
-- Pasta usada: os scripts e o `docker-compose.yml` ficam na pasta raiz do projeto (esta pasta: Infra). Os arquivos `.bat` assumem que são executados a partir desta mesma pasta.
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Redis](https://img.shields.io/badge/Redis-D82C20?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
 
-Requisitos
-- Docker e Docker Compose (Docker Desktop no Windows) instalados e executando.
+---
 
-Scripts úteis (Windows)
-- Startardbs.bat — inicia os serviços (executa `docker compose` com o `docker-compose.yml` desta pasta).
-- Stopdbs.bat — para os containers.
-- Backupdbs.bat — faz backup conforme configuração local.
-- Restoredbs.bat — restaura backup.
-- Logsdbs.bat — exibe logs dos containers.
+## 🎯 Por que usar?
 
-Como iniciar (exemplos)
+✅ **Zero instalação** - Sem precisar instalar PostgreSQL, MySQL ou MongoDB no sistema  
+✅ **Setup instantâneo** - 1 comando e tudo está rodando  
+✅ **Portável** - Funciona em qualquer PC com Docker  
+✅ **Leve** - Limites de RAM otimizados para desenvolvimento  
+✅ **Backup fácil** - Scripts automatizados inclusos  
+✅ **Multi-projeto** - Bancos separados por perfil (Docker Profiles)
 
-Iniciar via script (executar a partir da pasta do projeto):
+---
 
-```powershell
+## 📋 Pré-requisitos
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) instalado e executando
+- Windows 10/11 (scripts `.bat` são para Windows)
+- Um cliente SQL (DataGrip, DBeaver, etc.)
+
+---
+
+## 🚀 Quick Start
+
+### 1. Clone o repositório
+```bash
+git clone https://github.com/matheus05dev/Infra.git
+cd Infra
+```
+
+### 2. Inicie os bancos
+**Opção A - Via script (recomendado):**
+```batch
 Startardbs.bat
 ```
 
-Iniciar por perfil (ex.: apenas Postgres):
+**Opção B - Via Docker Compose:**
+```bash
+# Todos os bancos
+docker compose --profile pg --profile my --profile mo --profile redis up -d
 
-```powershell
+# Apenas PostgreSQL
+docker compose --profile pg up -d
+
+# Apenas MySQL
+docker compose --profile my up -d
+
+# Apenas MongoDB
+docker compose --profile mo up -d
+
+# Apenas Redis
+docker compose --profile redis up -d
+```
+
+### 3. Conecte no DataGrip/DBeaver
+Veja a seção [Conexões](#-conectar-nos-bancos) abaixo.
+
+---
+
+## 📦 Bancos Disponíveis
+
+| Banco | Porta | Usuário | Senha | Profile |
+|-------|-------|---------|-------|---------|
+| **PostgreSQL** | 5432 | `postgres` | `admin` | `pg` |
+| **MySQL** | 3306 | `root` | `admin` | `my` |
+| **MongoDB** | 27017 | *(sem auth)* | - | `mo` |
+| **Redis** | 6379 | *(sem auth)* | - | `redis` |
+
+---
+
+## 🛠️ Scripts Disponíveis
+
+| Script | Descrição |
+|--------|-----------|
+| **`Startardbs.bat`** | Inicia os containers com menu interativo |
+| **`Stopdbs.bat`** | Para todos os containers |
+| **`Logsdbs.bat`** | Visualiza logs em tempo real |
+| **`Backupdbs.bat`** | Cria backup automático dos dados |
+| **`Restoredbs.bat`** | Restaura backup anterior |
+
+### Como usar os scripts
+
+**Iniciar:**
+```batch
+Startardbs.bat
+# Escolha: 1 (todos) ou específico
+```
+
+**Ver logs:**
+```batch
+Logsdbs.bat
+# Ctrl+C para sair
+```
+
+**Backup:**
+```batch
+Backupdbs.bat
+# Backup salvo em: Backups/Backup_DD-MM-YYYY/
+```
+
+---
+
+## 💻 Conectar nos Bancos
+
+### 🐘 PostgreSQL
+
+**DataGrip/DBeaver:**
+```
+Host:     localhost
+Port:     5432
+Database: postgres
+User:     postgres
+Password: admin
+```
+
+**Linha de comando:**
+```bash
+docker exec -it postgres_dev psql -U postgres
+```
+
+---
+
+### 🐬 MySQL
+
+**DataGrip/DBeaver:**
+```
+Host:     localhost
+Port:     3306
+Database: mysql
+User:     root
+Password: admin
+```
+
+**Linha de comando:**
+```bash
+docker exec -it mysql_dev mysql -u root -padmin
+```
+
+---
+
+### 🍃 MongoDB
+
+**DataGrip/DBeaver:**
+```
+Host:     localhost
+Port:     27017
+Database: admin
+User:     (deixe vazio)
+Password: (deixe vazio)
+```
+
+**Linha de comando:**
+```bash
+docker exec -it mongo_dev mongosh
+```
+
+---
+
+### 🧭 Redis
+
+**Cliente (DataGrip/DBeaver ou outro):**
+```
+Host:     localhost
+Port:     6379
+Database: (use conforme cliente)
+User:     (não aplicável)
+Password: (não aplicável)
+```
+
+**Linha de comando:**
+```bash
+docker exec -it redis_dev redis-cli
+```
+
+---
+
+## ⚙️ Configurações
+
+### Alterar senhas
+
+**Edite `docker-compose.yml`:**
+```yaml
+environment:
+  POSTGRES_PASSWORD: SUA_SENHA_AQUI  # Linha 10
+  MYSQL_ROOT_PASSWORD: SUA_SENHA_AQUI  # Linha 25
+```
+
+**Depois reinicie:**
+```bash
+docker compose down
 docker compose --profile pg up -d
 ```
 
-Iniciar todos (Postgres, MySQL, Mongo):
+---
 
-```powershell
-docker compose --profile pg --profile my --profile mo up -d
-```
+### Alterar pasta padrão dos scripts
 
-Detalhes rápidos (conforme `docker-compose.yml`)
-- Postgres: porta 5432 — senha `admin` (POSTGRES_PASSWORD=admin).
-- MySQL: porta 3306 — senha `admin` (MYSQL_ROOT_PASSWORD=admin).
-- MongoDB: porta 27017 — sem autenticação por padrão.
-
-Conectar com um gerenciador (DataGrip, DBeaver)
-1. Abra o DataGrip ou DBeaver.
-2. Crie uma nova conexão e escolha o tipo de banco.
-3. Configure:
-   - Host: localhost
-   - Porta: 5432 / 3306 / 27017
-   - Usuário / Senha: conforme acima (ex.: postgres/admin ou root/admin). Para Mongo, deixe sem credenciais se não houver auth.
-4. Teste a conexão e salve.
-
-Como alterar a pasta usada ou customizar os `.bat`
-- Os `.bat` atuais assumem que você executa a partir da pasta do projeto (onde está este README). Para usar outro diretório, edite o `.bat` e aponte o caminho do `docker-compose.yml` ou adicione um `cd` no início. Exemplo simples para `Startardbs.bat`:
-
-```powershell
-:: Caminho absoluto da pasta do compose (exemplo)
-set BASE_DIR=C:\caminho\para\meu\projeto\Infra
+**Edite os arquivos `.bat` e adicione no início:**
+```batch
+@echo off
+set BASE_DIR=C:\caminho\para\sua\pasta\Infra
 cd /d %BASE_DIR%
-docker compose --profile pg --profile my --profile mo up -d
+
+:: Resto do script...
 ```
 
--- Ou altere o comando direto para usar um arquivo específico:
+---
 
-```powershell
-docker compose -f C:\caminho\para\meu\compose\docker-compose.yml up -d
+### Limites de recursos
+
+Os containers têm limites de RAM configurados:
+
+| Container | RAM Reservada | RAM Máxima |
+|-----------|---------------|------------|
+| PostgreSQL | 64MB | 128MB |
+| MySQL | 128MB | 256MB |
+| MongoDB | 128MB | 300MB |
+| Redis | 64MB | 64MB |
+
+**Total:** ~756MB máximo (estimado)
+
+Para ajustar, edite `docker-compose.yml`:
+```yaml
+deploy:
+  resources:
+    limits:
+      memory: 512M  # Aumenta limite
 ```
 
-Observações finais
-- Mantenha as senhas `admin` apenas para desenvolvimento local. Para uso compartilhado, substitua por valores seguros e versionamento adequado (não comite segredos).
+---
+
+## 🔧 Comandos Úteis
+
+### Ver containers rodando
+```bash
+docker ps
+```
+
+### Ver uso de recursos
+```bash
+docker stats
+```
+
+### Parar tudo
+```bash
+docker compose down
+```
+
+### Remover TUDO (cuidado! ⚠️)
+```bash
+docker compose down -v  # Remove containers E dados
+```
+
+### Entrar no container
+```bash
+docker exec -it postgres_dev bash
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Porta já está em uso
+```
+Error: bind: address already in use
+```
+
+**Solução:**
+```bash
+# Ver processo usando a porta
+netstat -ano | findstr :5432
+
+# Matar processo
+taskkill /PID <PID> /F
+```
+
+---
+
+### Docker não inicia
+```
+Cannot connect to the Docker daemon
+```
+
+**Solução:**
+1. Abra Docker Desktop manualmente
+2. Aguarde "Engine running"
+3. Execute o script novamente
+
+---
+
+### Container não sobe (EXIT 1)
+```bash
+# Ver logs do container com problema
+docker compose logs postgres_dev
+```
+
+**Causas comuns:**
+- Falta de RAM
+- Porta já em uso
+- Erro no `docker-compose.yml`
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+Infra/
+├── docker-compose.yml       # Definição dos containers
+├── Startardbs.bat          # Script para iniciar
+├── Stopdbs.bat             # Script para parar
+├── Logsdbs.bat             # Script de logs
+├── Backupdbs.bat           # Script de backup
+├── Restoredbs.bat          # Script de restore
+├── Backups/                # Backups gerados (não versionado)
+│   └── Backup_DD-MM-YYYY/
+└── README.md               # Este arquivo
+```
+
+---
+
+## ⚠️ Avisos Importantes
+
+### 🔒 Segurança
+
+> **⚠️ ATENÇÃO:** Senhas padrão `admin` são apenas para desenvolvimento local!
+> 
+> **NÃO USE EM PRODUÇÃO** ou ambientes compartilhados.
+> 
+> Para ambientes sérios, use senhas fortes e variáveis de ambiente (`.env`).
+
+### 📦 Backups
+
+> Os arquivos de backup **NÃO** estão no Git (`.gitignore`).
+> 
+> Faça backup manual dos arquivos importantes para local seguro.
+
+
+---
+
+## 💡Motivo do projeto
+
+Criado para facilitar o desenvolvimento e evitar instalação de múltiplos SGBDs localmente.
+
+---
+
+**Desenvolvido com ☕ por [Matheus Nunes](https://github.com/matheus05dev)**
+
+⭐ Se este projeto te ajudou, considere dar uma estrela no GitHub!
+
+---

@@ -44,3 +44,16 @@ services:
           memory: 300M
         reservations:
           memory: 128M
+
+  db-redis:
+    image: redis:alpine
+    container_name: redis_dev
+    profiles: ["redis"] # Só sobe com: docker compose --profile redis up -d
+    ports:
+      - "6379:6379"
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 64M
