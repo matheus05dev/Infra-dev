@@ -3,20 +3,23 @@
 > Stack completa de bancos de dados para desenvolvimento local usando Docker - PostgreSQL, MySQL e MongoDB prontos para uso com DataGrip/DBeaver.
 
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Batch (.bat)](https://img.shields.io/badge/Batch%20(.bat)-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://docs.microsoft.com/windows/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Redis](https://img.shields.io/badge/Redis-D92B2B?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
 
 ---
 
 ## 🎯 Por que usar?
 
-✅ **Zero instalação** - Sem precisar instalar PostgreSQL, MySQL ou MongoDB no sistema  
+✅ **Zero instalação** - Sem precisar instalar PostgreSQL, MySQL, MongoDB ou Redis no sistema  
 ✅ **Setup instantâneo** - 1 comando e tudo está rodando  
 ✅ **Portável** - Funciona em qualquer PC com Docker  
 ✅ **Leve** - Limites de RAM otimizados para desenvolvimento  
 ✅ **Backup fácil** - Scripts automatizados inclusos  
 ✅ **Multi-projeto** - Bancos separados por perfil (Docker Profiles)
+✅ **Configuração pronta para devs** - Ambiente de desenvolvimento pré-configurado para evitar que desenvolvedores precisem instalar drivers ou criar seus próprios `docker-compose`; inicie bancos rapidamente com scripts ou profiles prontos.
 
 ---
 
@@ -45,7 +48,7 @@ Startardbs.bat
 **Opção B - Via Docker Compose:**
 ```bash
 # Todos os bancos
-docker compose --profile pg --profile my --profile mo up -d
+docker compose --profile pg --profile my --profile mo --profile redis up -d
 
 # Apenas PostgreSQL
 docker compose --profile pg up -d
@@ -55,6 +58,9 @@ docker compose --profile my up -d
 
 # Apenas MongoDB
 docker compose --profile mo up -d
+
+# Apenas Redis
+docker compose --profile redis up -d
 ```
 
 ### 3. Conecte no DataGrip/DBeaver
@@ -69,6 +75,7 @@ Veja a seção [Conexões](#-conectar-nos-bancos) abaixo.
 | **PostgreSQL** | 5432 | `postgres` | `admin` | `pg` |
 | **MySQL** | 3306 | `root` | `admin` | `my` |
 | **MongoDB** | 27017 | *(sem auth)* | - | `mo` |
+| **Redis** | 6379 | - | - | `redis` |
 
 ---
 
@@ -100,6 +107,37 @@ Logsdbs.bat
 ```batch
 Backupdbs.bat
 # Backup salvo em: Backups/Backup_DD-MM-YYYY/
+```
+
+**Restaurar (substitui dados atuais):**
+```batch
+Restoredbs.bat
+# Escolha o backup a restaurar; este comando substituirá os dados atuais
+```
+
+**Remover imagens e volumes (CUIDADO — apaga dados):**
+
+- Recomenda-se usar o script `Stopdbs.bat`, que faz uma limpeza interativa e segura (para evitar remoção acidental): ele para a stack, remove volumes e realiza limpeza de imagens e volumes órfãos.
+
+```batch
+Stopdbs.bat
+# O script pede confirmação antes de prosseguir.
+```
+
+- Alternativa manual (avançado):
+
+```bash
+# Parar e remover containers e volumes mapeados pelo compose
+docker compose down -v
+
+# Parar, remover containers, imagens definidas no compose e volumes
+docker compose down --rmi all -v
+
+# Remover imagens não utilizadas (opcional)
+docker image prune -a
+
+# Remover volumes não utilizados (opcional)
+docker volume prune
 ```
 
 ---
