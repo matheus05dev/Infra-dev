@@ -321,53 +321,15 @@ Infra/
 
 ### 🌐 Repositório Público
 
-> Este repositório é **público**.
+> Este repositório é para uso pessoal seu
 > 
-> **Nunca comite:**
-> - Senhas reais
-> - Dados sensíveis
-> - Backups com informações pessoais
+> **as senhas são padrões**
 
 ---
 
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Para contribuir:
-
-1. Fork o projeto
-2. Crie uma branch (`git checkout -b feature/MinhaFeature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
-4. Push para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
-
----
-
-## 📝 Changelog
-
-### v1.0.0 (Atual)
-- ✅ PostgreSQL, MySQL e MongoDB
-- ✅ Scripts .bat automatizados
-- ✅ Sistema de backup/restore
-- ✅ Docker Profiles
-- ✅ Limites de RAM otimizados
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
-## 🙏 Agradecimentos
+## 💡Motivo do projeto
 
 Criado para facilitar o desenvolvimento e evitar instalação de múltiplos SGBDs localmente.
-
----
-
-## 📞 Suporte
-
-Encontrou um problema? [Abra uma issue](https://github.com/matheus05dev/Infra/issues/new)
 
 ---
 
